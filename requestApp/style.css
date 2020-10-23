@@ -1,0 +1,48 @@
+/*
+* Request App Style 
+*
+* Color scheme
+* snowy mint green: #CCFFCC
+* malibu blue: #66CCFF
+* pacific blue: #0099CC
+* smalt blue: #003399
+* From https://www.colorcombos.com/color-schemes/16/ColorCombo16.html
+*
+*/
+
+body {
+	background-color: #CCFFCC;
+}
+
+#app {
+	margin-top: 1rem;
+}
+
+.nt-icon {
+	height:50px;
+	width:auto;
+	
+	margin-bottom: 20px;
+	/*filter: brightness(0) invert(1);*/
+}
+
+.nt-card {
+	background-color: #66CCFF;
+	color: black;
+	width: 18rem;
+	margin-top:2rem;
+}
+
+.nt-card:hover {
+	background-color: white !important;
+	cursor: pointer;
+}
+
+.nt-card a {
+	text-decoration: none;
+	color: black;
+}
+
+footer {
+	margin-top: 1rem;
+}

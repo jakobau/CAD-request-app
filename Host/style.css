@@ -1,0 +1,32 @@
+/*
+* Host App Style 
+*
+* Color scheme
+* snowy mint green: #CCFFCC
+* malibu blue: #66CCFF
+* pacific blue: #0099CC
+* smalt blue: #003399
+* From https://www.colorcombos.com/color-schemes/16/ColorCombo16.html
+*
+*/
+
+body {
+	background-color: #CCFFCC;
+}
+
+#app {
+	margin-top: 1rem;
+}
+
+.collapse.show {
+  visibility: visible;
+}
+
+.list-group-item {
+	padding-left:0px;
+	padding-right:0px;
+}
+
+.nt-checkbox {
+	margin-right:10px;
+}
