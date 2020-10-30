@@ -120,12 +120,12 @@
 		  	<div id="request-form-div">
 				<form id="request-form" v-on:submit.prevent="request">
 
-				  <p v-if="errors.length">
+				  <div v-if="errors.length" class="alert alert-danger">
 				    <b>Please correct the following error(s):</b>
 				    <ul>
 				      <li v-for="error in errors">{{ error }}</li>
 				    </ul>
-				  </p>
+				  </div>
 
 				  <div class="form-group">
 				    <label for="emailAddress">Email address</label>

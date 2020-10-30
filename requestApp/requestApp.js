@@ -22,29 +22,8 @@ var app = new Vue({
   	methods: {
 
   		request: function(e) {
-  			console.log("checkform");
-	      	/*if (this.emailAddress && this.name && this.location && this.tool && this.docpicker && this.comment) {
-	        	return true;
-	      	}*/
-
-		  	if (this.emailAddress && this.name) {
-	        	return true;
-	      	}
-	      	this.errors = [];
-
-	      	if (!this.emailAddress) {
-	      	  this.errors.push('Name required.');
-	      	}
-	      	if (!this.name) {
-	        	this.errors.push('Age required.');
-	      	}
-
-			e.preventDefault();
-
-			console.log("request");
-			//create unique id
-  			var id = Math.random().toString(36).substr(2, 6);
-  			this.requestID = id;
+  			
+  			var uploadBool = false;
 
   			//get form data
   			this.emailAddress = emailAddress.value;
@@ -54,28 +33,56 @@ var app = new Vue({
   			this.comment = comment.value;
   			this.timestamp = Date.now();
 
-  			//send to firebase
-  			database.ref('requests/' + this.requestID).set({
-			    name : this.requesterName,
-			    email : this.emailAddress,
-			    pickupLocation : this.pickupLocation,
-			    tool : this.tool,
-			    fileName : this.docpicker.name,
-			    comment : this.comment,
-			    timestamp : this.timestamp
-			});
+	      	if (this.emailAddress && this.requesterName && 
+	      		this.pickupLocation && this.docpicker) {
+	        	uploadBool = true;
+	      	}
 
-			//create reference and upload file
-			var tempFileName = this.requestID + "#" + this.docpicker.name
-			var storage = databaseStorage.ref(tempFileName);
-      		var upload = storage.put(this.docpicker);
-      		console.log(tempFileName);
+	      	this.errors = [];
 
-			console.log("request created in firebase", Date.now());
-			
-			//submit notice
-			document.getElementById('request-form-div').style.display = 'none';
-			document.getElementById('submit-page').style.display = 'block';
+	      	if (!this.emailAddress) {
+	      	  	this.errors.push('Email required.');
+	      	}
+	      	if (!this.requesterName) {
+	        	this.errors.push('Name required.');
+	      	}
+	      	if (!this.pickupLocation) {
+	        	this.errors.push('Pick up location required.');
+	      	}
+	      	if (!this.docpicker) {
+	        	this.errors.push('File required.');
+	      	}
+
+			e.preventDefault();
+
+			if(uploadBool) {
+				console.log("request");
+				//create unique id
+	  			var id = Math.random().toString(36).substr(2, 6);
+	  			this.requestID = id;
+
+	  			//send to firebase
+	  			database.ref('requests/' + this.requestID).set({
+				    name : this.requesterName,
+				    email : this.emailAddress,
+				    pickupLocation : this.pickupLocation,
+				    tool : this.tool,
+				    fileName : this.docpicker.name,
+				    comment : this.comment,
+				    timestamp : this.timestamp
+				});
+
+				//create reference and upload file
+				var tempFileName = this.requestID + "#" + this.docpicker.name
+				var storage = databaseStorage.ref(tempFileName);
+	      		var upload = storage.put(this.docpicker);
+
+				console.log("request created in firebase", Date.now());
+				
+				//submit notice
+				document.getElementById('request-form-div').style.display = 'none';
+				document.getElementById('submit-page').style.display = 'block';
+			}
 	    },
 
 	    Images_onFileChanged: function(event) {
