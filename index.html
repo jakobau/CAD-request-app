@@ -13,7 +13,7 @@
 
 	<!-- fontawesome -->
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-		
+
 	<!-- development version, includes helpful console warnings -->
 	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 
@@ -21,7 +21,7 @@
 	<script src="https://cdn.jsdelivr.net/npm/vue"></script>-->
 
 	<!-- custom style sheet -->
-	 <link rel="stylesheet" href="requestApp/style.css">
+	<link rel="stylesheet" href="requestApp/style.css">
 
 	<!-- reCAPTCHA -->
 	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
@@ -36,6 +36,8 @@
 
 	<script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-database.js"></script>
 
+	<!-- TODO: Add SDKs for Firebase products that you want to use -->
+	<script src="https://www.gstatic.com/firebasejs/7.13.1/firebase-storage.js"></script>
 
 	<script>
 		var firebaseConfig = {
@@ -49,7 +51,6 @@
 		    measurementId: "G-NNTM8535BK"
 		};
 
-
 		// Initialize Firebase
 	 	firebase.initializeApp(firebaseConfig);
 
@@ -57,6 +58,10 @@
 		var database = firebase.database();
 
 		var databaseRef = firebase.database().ref('requests');
+
+		//create a storage reference
+        var databaseStorage = firebase.storage();
+
 	</script>
 
 	<div id="app" v-cloak>
@@ -101,6 +106,7 @@
 					Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
 				</p>
 			</footer>
+
 		</div>
 
 		<!-- MAKE REQUEST -->
@@ -111,51 +117,60 @@
 		  		<p class="display-4">Make a Request</p>
 		  	</div>
 
-			<form id="request-form">
+		  	<div id="request-form-div">
+				<form id="request-form" v-on:submit.prevent="request">
 
-			  <div class="form-group">
-			    <label for="emailAddress">Email address</label>
-			    <input type="email" class="form-control" id="emailAddress" placeholder="name@example.com">
-			  </div>
+				  <p v-if="errors.length">
+				    <b>Please correct the following error(s):</b>
+				    <ul>
+				      <li v-for="error in errors">{{ error }}</li>
+				    </ul>
+				  </p>
 
-			  <div class="form-group">
-			    <label for="name">Name</label>
-			    <input type="text" class="form-control" id="name" placeholder="name">
-			  </div>
+				  <div class="form-group">
+				    <label for="emailAddress">Email address</label>
+				    <input type="email" class="form-control" id="emailAddress" placeholder="name@example.com" name="emailAddress" v-model="emailAddress">
+				  </div>
 
-			  <div class="form-group row">
-			    <div class="col">
-			    	<label for="location">Pick-up Location</label>
-			      	<select class="form-control" id="location">
-			    		<option>Location</option>
-			      		<option>Hilo</option>
-			      		<option>HPP</option>
-			      		<option>Hamakua</option>
-			    	</select>
-			    </div>
-			    <div class="col">
-			      	<label for="tool">Program/Tool Used</label>
-			    	<input type="text" class="form-control" id="tool" placeholder="TinkerCAD">
-			    </div>
-			  </div>
+				  <div class="form-group">
+				    <label for="requesterName">Name</label>
+				    <input type="text" class="form-control" id="requesterName" placeholder="name" name="requesterName" v-model="requesterName">
+				  </div>
 
-			  <div class="form-group">
-			    <label for="exampleFormControlInput1">Upload STL File</label><br>
-			    <input type="file" id="docpicker" accept=".txt,.stl">
-			  </div>
+				  <div class="form-group row">
+				    <div class="col">
+				    	<label for="pickupLocation">Pick-up Location</label>
+				      	<select class="form-control" id="pickupLocation" name="pickupLocation" v-model="pickupLocation">
+				    		<option>Location</option>
+				      		<option>Hilo</option>
+				      		<option>HPP</option>
+				      		<option>Hamakua</option>
+				    	</select>
+				    </div>
+				    <div class="col">
+				      	<label for="tool">Program/Tool Used</label>
+				    	<input type="text" class="form-control" id="tool" placeholder="TinkerCAD" name="tool" v-model="tool">
+				    </div>
+				  </div>
 
-			  <div class="form-group">
-			    <label for="comment">Comments or Concerns</label>
-			    <textarea class="form-control" id="comment" rows="3"></textarea>
-			  </div>
+				  <div class="form-group">
+				    <label for="docpicker">Upload a Single STL File</label><br>
+				    <input type="file" id="docpicker" accept=".txt,.stl" name="docpicker" @change="Images_onFileChanged">
+				  </div>
 
-			  <!--<div class="form-group">
-			  	<div class="g-recaptcha" data-sitekey="6LdtwdkZAAAAAF0tZZ6j-YUwu9quf--HL7lIJmpG"></div>
-			  </div>-->
-			  
-			  <button class="btn btn-primary" v-on:click="this.request">Make request</button>
+				  <div class="form-group">
+				    <label for="comment">Comments or Concerns</label>
+				    <textarea class="form-control" id="comment" rows="3" name="comment" v-model="comment"></textarea>
+				  </div>
 
-			</form>
+				  <!--<div class="form-group">
+				  	<div class="g-recaptcha" data-sitekey="6LdtwdkZAAAAAF0tZZ6j-YUwu9quf--HL7lIJmpG"></div>
+				  </div>-->
+				  
+				  <input class="btn btn-primary" type="submit" value="Make Request">
+
+				</form>
+			</div>
 
 			<!-- SUBMIT PAGE -->
 			<div id="submit-page" class="container" style="display:none;">
@@ -164,9 +179,13 @@
 				  	<h4 class="alert-heading">Well done!</h4>
 				  	<hr>
 				  	<p>Your request is now in review. ID = {{ requestID }}</p>
+				  	<div class="card">
+				  		<h1>{{ requesterName }}</h1>
+				  		<p>{{ emailAddress }}</p>
+				  	</div>
 				</div>
 
-				<a href="#" v-on:click="menu">Main Menu</a>
+				<a href="#" v-on:click="this.reloadPage">Main Menu</a>
 
 				<div id="title">
 			  		
