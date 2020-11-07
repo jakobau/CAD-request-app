@@ -54,9 +54,11 @@
 		// Get a reference to the database service
 		var database = firebase.database();
 		var databaseRef = firebase.database().ref('requests');
+		var databaseUser = firebase.database().ref('userInfo');
 
 		//create a storage reference
         var databaseStorage = firebase.storage();
+        var databaseStorageRef = firebase.storage().ref();
 
 	</script>
 
@@ -104,8 +106,11 @@
 			<div id="title" class="text-center" style="margin-bottom:1rem;">
 		  		<h1 class="display-4">Dashboard</h1>
 		  		<p class="lead">
-			  	Welcome Jakob Au!
-				</p>
+		  			Welcome {{ userName }}! 
+		  			<span><a href="#" v-on:click="this.logout">logout</a></span>
+		  			<br>
+		  			Location: {{ userLocation }}
+		  		</p>
 		  	</div>
 
 			<div class="accordion" id="accordionExample">
@@ -115,7 +120,7 @@
 			        <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
 			          <li class="d-flex justify-content-between align-items-center">
 					    Accepted/Pending Requests
-					    <span class="badge badge-primary badge-pill">3</span>
+					    <span class="badge badge-primary badge-pill">{{ numTotal }}</span>
 					  </li>
 			        </button>
 			      </h2>
@@ -125,18 +130,10 @@
 			      <div style="font-size: 10px; text-align: right; padding-right:15px;">complete</div>
 			      <div class="card-body" style="padding-top:0px">
 			      	<ul class="list-group list-group-flush">
-					  <li class="list-group-item d-flex justify-content-between">
-					  	<a href="#">Design Name [10/20 09:00AM HST]</a>
-					  	<input class="nt-checkbox" type="checkbox">
-					  </li>
-					  <li class="list-group-item d-flex justify-content-between">
-					  	<a href="#">Design Name [10/20 09:00AM HST]</a>
-					  	<input class="nt-checkbox" type="checkbox">
-					  </li>
-					  <li class="list-group-item d-flex justify-content-between">
-					  	<a href="#">Design Name [10/20 09:00AM HST]</a>
-					  	<input class="nt-checkbox" type="checkbox">
-					  </li>
+			      	  <li class="list-group-item d-flex justify-content-between" v-for="request in filteredRequests" :key="request.timestamp">
+			      	  	<span><a href="#" v-on:click="downloadFile(request.fileName, request.id)">{{ request.fileName }}</a> [{{ request.timestamp }}]</span>
+			      	  	<input class="nt-checkbox" type="checkbox">
+			      	  </li>
 					</ul>
 			      </div>
 			    </div>
@@ -148,7 +145,7 @@
 			        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
 			          <li class="d-flex justify-content-between align-items-center">
 					    Waiting Requests
-					    <span class="badge badge-primary badge-pill">2</span>
+					    <span class="badge badge-primary badge-pill">{{ numPending }}</span>
 					  </li>
 			        </button>
 			      </h2>
@@ -157,14 +154,10 @@
 			      <div style="font-size: 10px; text-align: right; padding-right:15px;">accept</div>
 			      <div class="card-body" style="padding-top:0px">
 			      	<ul class="list-group list-group-flush">
-			          <li class="list-group-item d-flex justify-content-between">
-					  	<a href="#">Design Name [10/20 09:00AM HST]</a>
-					  	<input class="nt-checkbox" type="checkbox">
-					  </li>
-					  <li class="list-group-item d-flex justify-content-between">
-					  	<a href="#">Design Name [10/20 09:00AM HST]</a>
-					  	<input class="nt-checkbox" type="checkbox">
-					  </li>
+			          <li class="list-group-item d-flex justify-content-between" v-for="request in pendingRequests" :key="request.timestamp">
+			      	  	<span><a href="#" v-on:click="downloadFile(request.fileName,request.id)">{{ request.fileName }}</a> [{{ request.timestamp }}]</span>
+			      	  	<input class="nt-checkbox" type="checkbox">
+			      	  </li>
 					</ul>
 			      </div>
 			    </div>
@@ -176,7 +169,7 @@
 			        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
 			          <li class="d-flex justify-content-between align-items-center">
 					    Completed Requests
-					    <span class="badge badge-primary badge-pill">1</span>
+					    <span class="badge badge-primary badge-pill">{{ numCompleted }}</span>
 					  </li>
 			        </button>
 			      </h2>
@@ -185,10 +178,10 @@
 			      <div style="font-size: 10px; text-align: right; padding-right:15px;">complete</div>
 			      <div class="card-body" style="padding-top:0px">
 			      	<ul class="list-group list-group-flush">
-			          <li class="list-group-item d-flex justify-content-between">
-					  	<a href="#">Design Name [10/20 09:00AM HST]</a>
-					  	<input class="nt-checkbox" type="checkbox" checked=checked>
-					  </li>
+			          <li class="list-group-item d-flex justify-content-between" v-for="request in completedRequests" :key="request.timestamp">
+			      	  	<span><a href="#">{{ request.fileName }}</a> [{{ request.timestamp }}]</span>
+			      	  	<input class="nt-checkbox" type="checkbox">
+			      	  </li>
 					</ul>
 			      </div>
 			    </div>

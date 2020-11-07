@@ -69,7 +69,9 @@ var app = new Vue({
 				    tool : this.tool,
 				    fileName : this.docpicker.name,
 				    comment : this.comment,
-				    timestamp : this.timestamp
+				    timestamp : this.timestamp,
+				    status : 'toReview',
+				    id : this.requestID
 				});
 
 				//create reference and upload file
