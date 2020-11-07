@@ -143,6 +143,8 @@ var app = new Vue({
 			  xhr.open('GET', url);
 			  xhr.send();
 
+			  console.log("success");
+
 			}).catch(function(error) {
 			  console.log(error);
 			});
