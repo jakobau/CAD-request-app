@@ -141,7 +141,7 @@ var app = new Vue({
 			    //Create an `a` tag (since it has an `href` and a `download` attribute) 
 		        var a = document.createElement('a');
 		        a.href = window.URL.createObjectURL(xhr.response);
-		        a.download = 'someFileName';
+		        a.download = fileName;
 		        a.style.display = 'none';
 		        document.body.appendChild(a);
 		        a.click();                            //Simulates a click event
