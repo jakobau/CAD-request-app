@@ -133,7 +133,7 @@
 			      	  	<span>
 			      	  		<div class="red-square vertical-center"></div>
 			      	  		ID#{{ request.id }} <br>
-			      	  		Date: [{{ timeConverter(request.timestamp) }}]<br>
+			      	  		{{ request.pickupLocation }}, [{{ timeConverter(request.timestamp) }}]<br>
 			      	  		email: {{ request.email }}<br>
 			      	  		
 							<a href="#" v-on:click="downloadFile(request.fileName, request.id)">{{ request.fileName }}</a> 
@@ -202,7 +202,7 @@
 			      	  	<span>
 			      	  		<div class="yellow-square vertical-center"></div>
 			      	  		ID#{{ request.id }} <br>
-			      	  		Date: [{{ timeConverter(request.timestamp) }}]<br>
+			      	  		{{ request.pickupLocation }}, [{{ timeConverter(request.timestamp) }}]<br>
 			      	  		email: {{ request.email }}<br>
 			      	  		
 							<a href="#" v-on:click="downloadFile(request.fileName, request.id)">{{ request.fileName }}</a> 
@@ -236,7 +236,7 @@
 			      	  	<span>
 			      	  		<div class="green-square vertical-center"></div>
 			      	  		ID#{{ request.id }} <br>
-			      	  		Date: [{{ timeConverter(request.timestamp) }}]<br>
+			      	  		{{ request.pickupLocation }}, [{{ timeConverter(request.timestamp) }}]<br>
 			      	  		email: {{ request.email }}<br>
 			      	  		
 							<a href="#" v-on:click="downloadFile(request.fileName, request.id)">{{ request.fileName }}</a> 
