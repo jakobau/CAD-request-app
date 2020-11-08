@@ -14,14 +14,16 @@ var app = new Vue({
 		userLocation: null,
 
 		//request data
-		filteredRequests: [],
-		acceptedRequests: [],
-		pendingRequests: [],
-		completedRequests: [],
-		numTotal: null,
-		numAccepted: null,
-		numPending: null,
-		numCompleted: null,
+		filteredRequests: [], //all requests
+		toReviewRequests: [],
+		toPrintRequests: [],
+		toLocationRequests: [],
+		doneRequests: [],
+		numTotal: 0,
+		numtoReview: 0,
+		numtoPrint: 0,
+		numtoLocation: 0,
+		numDone: 0,
 	},
 
 	methods: {
@@ -73,17 +75,68 @@ var app = new Vue({
 			})
 			// then filter requests with user location
 			.then(function() {
-				snapshot.forEach(function(childSnapshot) {
+				//reset variables
+				vm.filteredRequests = [];
+				vm.toReviewRequests = [];
+				vm.toPrintRequests = [];
+				vm.toLocationRequests = [];
+				vm.doneRequests = [];
 
-					console.log(childSnapshot.val());
+				vm.numTotal = 0;
+				vm.numtoReview = 0;
+				vm.numtoPrint = 0;
+				vm.numtoLocation = 0;
+				vm.numDone = 0;
 
-				    if(childSnapshot.val().pickupLocation == vm.userLocation) {
-
+				//if admin login
+				if(vm.userLocation == "All") {
+					snapshot.forEach(function(childSnapshot) {
+				    	//add to all requests
 				    	vm.filteredRequests.push(childSnapshot.val());
 				    	vm.numTotal += 1;
 
-				    }
-				});
+				    	//add to different requests
+				    	if(childSnapshot.val().status == "toReview") {
+				    		vm.toReviewRequests.push(childSnapshot.val());
+				    		vm.numtoReview += 1;
+				    	} else if(childSnapshot.val().status == "toPrint") {
+				    		vm.toPrintRequests.push(childSnapshot.val());
+				    		vm.numtoPrint += 1;
+				    	} else if(childSnapshot.val().status == "toLocation") {
+				    		vm.toLocationRequests.push(childSnapshot.val());
+				    		vm.numtoLocation += 1;
+				    	} else if(childSnapshot.val().status == "done") {
+				    		vm.doneRequests.push(childSnapshot.val());
+				    		vm.numDone += 1;
+				    	}
+
+					});
+				} else { //if host login
+					snapshot.forEach(function(childSnapshot) {
+						//if correct location
+					    if(childSnapshot.val().pickupLocation == vm.userLocation) {
+
+					    	//add to all requests
+					    	vm.filteredRequests.push(childSnapshot.val());
+					    	vm.numTotal += 1;
+
+					    	//add to different requests
+					    	if(childSnapshot.val().status == "toReview") {
+					    		vm.toReviewRequests.push(childSnapshot.val());
+					    		vm.numtoReview += 1;
+					    	} else if(childSnapshot.val().status == "toPrint") {
+					    		vm.toPrintRequests.push(childSnapshot.val());
+					    		vm.numtoPrint += 1;
+					    	} else if(childSnapshot.val().status == "toLocation") {
+					    		vm.toLocationRequests.push(childSnapshot.val());
+					    		vm.numtoLocation += 1;
+					    	} else if(childSnapshot.val().status == "done") {
+					    		vm.doneRequests.push(childSnapshot.val());
+					    		vm.numDone += 1;
+					    	}
+					    }
+					});
+				}
 			})
 			// then update DOM
 			.then(function() {
@@ -155,6 +208,70 @@ var app = new Vue({
 			}).catch(function(error) {
 			  console.log(error);
 			});
+		},
+
+		timeConverter: function(UNIX_timestamp) {
+			var a = new Date(UNIX_timestamp);
+			var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+			var year = a.getFullYear();
+			var month = months[a.getMonth()];
+			var date = a.getDate();
+			var hour = a.getHours();
+			var min = a.getMinutes();
+			var sec = a.getSeconds();
+			//var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+			var time = date + ' ' + month + ' ' + year;
+			return time;
+		},
+
+		changeStatus: function(requestStatus, requestID) {
+			var vm = this;
+
+			if(requestStatus == "toReview") {
+				console.log("toReview");
+
+				vm.toReviewRequests.forEach(function(request, index) {
+					//find request
+					if(request.id == requestID) {
+						//update local lists
+						request.status = "toPrint";
+						vm.toPrintRequests.push(request);
+						vm.toReviewRequests.splice(index, 1);
+						//update database
+						database.ref("requests/"+requestID).update({status: "toPrint"});
+					}
+				});
+			} else if(requestStatus == "toPrint") {
+				console.log("toPrint");
+				
+				vm.toPrintRequests.forEach(function(request, index) {
+					//find request
+					if(request.id == requestID) {
+						//update local lists
+						request.status = "toLocation";
+						vm.toLocationRequests.push(request);
+						vm.toPrintRequests.splice(index, 1);
+						//update database
+						database.ref("requests/"+requestID).update({status: "toLocation"});
+					}
+				});
+			} else if(requestStatus == "toLocation") {
+				console.log("toLocation");
+
+				vm.toLocationRequests.forEach(function(request, index) {
+					//find request
+					if(request.id == requestID) {
+						//update local lists
+						request.status = "done";
+						vm.doneRequests.push(request);
+						vm.toLocationRequests.splice(index, 1);
+						//update database
+						database.ref("requests/"+requestID).update({status: "done"});
+					}
+				});
+			} else {
+				console.log("done or error");
+			} 
 		}
 	},
 
@@ -189,6 +306,15 @@ var app = new Vue({
 		}, function (errorObject) {
 		  console.log("The read failed: " + errorObject.code);
 		});
+	},
+
+	filters: {
+	    sortedItems: function() {
+	        this.items.sort( ( a, b) => {
+	            return new Date(a.date) - new Date(b.date);
+	        });
+	        return this.items;
+	    }
 	}
 
 });

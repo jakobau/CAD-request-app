@@ -113,39 +113,13 @@
 		  		</p>
 		  	</div>
 
-			<div class="accordion" id="accordionExample">
-			  <div class="card">
-			    <div class="card-header" id="headingOne">
-			      <h2 class="mb-0">
-			        <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-			          <li class="d-flex justify-content-between align-items-center">
-					    Accepted/Pending Requests
-					    <span class="badge badge-primary badge-pill">{{ numTotal }}</span>
-					  </li>
-			        </button>
-			      </h2>
-			    </div>
-
-			    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne">
-			      <div style="font-size: 10px; text-align: right; padding-right:15px;">complete</div>
-			      <div class="card-body" style="padding-top:0px">
-			      	<ul class="list-group list-group-flush">
-			      	  <li class="list-group-item d-flex justify-content-between" v-for="request in filteredRequests" :key="request.timestamp">
-			      	  	<span><a href="#" v-on:click="downloadFile(request.fileName, request.id)">{{ request.fileName }}</a> [{{ request.timestamp }}]</span>
-			      	  	<input class="nt-checkbox" type="checkbox">
-			      	  </li>
-					</ul>
-			      </div>
-			    </div>
-			  </div>
-
-			  <div class="card">
+		  	<div class="card">
 			    <div class="card-header" id="headingTwo">
 			      <h2 class="mb-0">
 			        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
 			          <li class="d-flex justify-content-between align-items-center">
-					    Waiting Requests
-					    <span class="badge badge-primary badge-pill">{{ numPending }}</span>
+					    In Review
+					    <span class="badge badge-primary badge-pill">{{ numtoReview }}</span>
 					  </li>
 			        </button>
 			      </h2>
@@ -154,9 +128,54 @@
 			      <div style="font-size: 10px; text-align: right; padding-right:15px;">accept</div>
 			      <div class="card-body" style="padding-top:0px">
 			      	<ul class="list-group list-group-flush">
-			          <li class="list-group-item d-flex justify-content-between" v-for="request in pendingRequests" :key="request.timestamp">
-			      	  	<span><a href="#" v-on:click="downloadFile(request.fileName,request.id)">{{ request.fileName }}</a> [{{ request.timestamp }}]</span>
-			      	  	<input class="nt-checkbox" type="checkbox">
+			          <li class="list-group-item d-flex justify-content-between" v-for="request in toReviewRequests" :key="request.timestamp">
+
+			      	  	<span>
+			      	  		<div class="red-square vertical-center"></div>
+			      	  		ID#{{ request.id }} <br>
+			      	  		Date: [{{ timeConverter(request.timestamp) }}]<br>
+			      	  		email: {{ request.email }}<br>
+			      	  		
+							<a href="#" v-on:click="downloadFile(request.fileName, request.id)">{{ request.fileName }}</a> 
+						</span>
+
+						<a href="#" v-on:click="changeStatus(request.status, request.id)">successfully<br> reviewed</a>
+
+			      	  </li>
+					</ul>
+			      </div>
+			    </div>
+			  </div>
+
+			<div class="accordion" id="accordionExample">
+			  <div class="card">
+			    <div class="card-header" id="headingOne">
+			      <h2 class="mb-0">
+			        <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+			          <li class="d-flex justify-content-between align-items-center">
+					    Ready To Print
+					    <span class="badge badge-primary badge-pill">{{ numtoPrint }}</span>
+					  </li>
+			        </button>
+			      </h2>
+			    </div>
+
+			    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne">
+			      <div class="card-body">
+			      	<ul class="list-group list-group-flush">
+			      	  <li class="list-group-item d-flex justify-content-between" v-for="request in toPrintRequests" :key="request.timestamp">
+
+			      	  	<span>
+			      	  		<div class="orange-square vertical-center"></div>
+			      	  		ID#{{ request.id }} <br>
+			      	  		{{ request.pickupLocation }}, [{{ timeConverter(request.timestamp) }}]<br>
+			      	  		email: {{ request.email }}<br>
+			      	  		
+							<a href="#" v-on:click="downloadFile(request.fileName, request.id)">{{ request.fileName }}</a> 
+						</span>
+
+						<a href="#" v-on:click="changeStatus(request.status, request.id)">successfully<br> printed</a>
+
 			      	  </li>
 					</ul>
 			      </div>
@@ -168,8 +187,8 @@
 			      <h2 class="mb-0">
 			        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
 			          <li class="d-flex justify-content-between align-items-center">
-					    Completed Requests
-					    <span class="badge badge-primary badge-pill">{{ numCompleted }}</span>
+					    Printed, sending to location...
+					    <span class="badge badge-primary badge-pill">{{ numtoLocation }}</span>
 					  </li>
 			        </button>
 			      </h2>
@@ -178,14 +197,59 @@
 			      <div style="font-size: 10px; text-align: right; padding-right:15px;">complete</div>
 			      <div class="card-body" style="padding-top:0px">
 			      	<ul class="list-group list-group-flush">
-			          <li class="list-group-item d-flex justify-content-between" v-for="request in completedRequests" :key="request.timestamp">
-			      	  	<span><a href="#">{{ request.fileName }}</a> [{{ request.timestamp }}]</span>
-			      	  	<input class="nt-checkbox" type="checkbox">
+			          <li class="list-group-item d-flex justify-content-between" v-for="request in toLocationRequests" :key="request.timestamp">
+
+			      	  	<span>
+			      	  		<div class="yellow-square vertical-center"></div>
+			      	  		ID#{{ request.id }} <br>
+			      	  		Date: [{{ timeConverter(request.timestamp) }}]<br>
+			      	  		email: {{ request.email }}<br>
+			      	  		
+							<a href="#" v-on:click="downloadFile(request.fileName, request.id)">{{ request.fileName }}</a> 
+						</span>
+
+						<a href="#" v-on:click="changeStatus(request.status, request.id)">successfully<br> transported</a>
+
 			      	  </li>
 					</ul>
 			      </div>
 			    </div>
 			  </div>
+
+			  <div class="card">
+			    <div class="card-header" id="headingFour">
+			      <h2 class="mb-0">
+			        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+			          <li class="d-flex justify-content-between align-items-center">
+					    Ready to Pickup
+					    <span class="badge badge-primary badge-pill">{{ numDone }}</span>
+					  </li>
+			        </button>
+			      </h2>
+			    </div>
+			    <div id="collapseFour" class="collapse" aria-labelledby="headingFour">
+			      <div style="font-size: 10px; text-align: right; padding-right:15px;">complete</div>
+			      <div class="card-body" style="padding-top:0px">
+			      	<ul class="list-group list-group-flush">
+			          <li class="list-group-item d-flex justify-content-between" v-for="request in doneRequests" :key="request.timestamp">
+
+			      	  	<span>
+			      	  		<div class="green-square vertical-center"></div>
+			      	  		ID#{{ request.id }} <br>
+			      	  		Date: [{{ timeConverter(request.timestamp) }}]<br>
+			      	  		email: {{ request.email }}<br>
+			      	  		
+							<a href="#" v-on:click="downloadFile(request.fileName, request.id)">{{ request.fileName }}</a> 
+						</span>
+
+						<a href="#" v-on:click="changeStatus(request.status, request.id)">successfully<br> transported</a>
+
+			      	  </li>
+					</ul>
+			      </div>
+			    </div>
+			  </div>
+
 			</div>
 
 		  	<!-- FOOTER -->

@@ -30,3 +30,36 @@ body {
 .nt-checkbox {
 	margin-right:10px;
 }
+
+.red-square {
+  width: 10px;
+  height: 10px;
+  background: red;
+  float:left;
+}
+
+.orange-square {
+  width: 10px;
+  height: 10px;
+  background: orange;
+  float:left;
+}
+
+.yellow-square {
+  width: 10px;
+  height: 10px;
+  background: yellow;
+  float:left;
+}
+
+.green-square {
+  width: 10px;
+  height: 10px;
+  background: green;
+  float:left;
+}
+
+.vertical-center {
+  margin-top: 9px;
+  margin-right: 5px;
+}
