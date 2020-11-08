@@ -31,6 +31,7 @@ var app = new Vue({
 
 			//sign in
 			firebase.auth().signInWithEmailAndPassword(email.value, password.value)
+			.then(this.changeDate())
 			.catch(function(error) {
 			  // Handle Errors here.
 			  var errorCode = error.code;
@@ -46,6 +47,7 @@ var app = new Vue({
 		logout: function() {
 
 			firebase.auth().signOut();
+			location.reload(); 
 
 		},
 
