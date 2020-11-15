@@ -139,7 +139,6 @@
 				    <div class="col">
 				    	<label for="pickupLocation">Pick-up Location</label>
 				      	<select class="form-control" id="pickupLocation" name="pickupLocation" v-model="pickupLocation">
-				    		<option>Location</option>
 				      		<option>Hilo</option>
 				      		<option>HPP</option>
 				      		<option>Hamakua</option>
@@ -161,12 +160,11 @@
 				    <textarea class="form-control" id="comment" rows="3" name="comment" v-model="comment"></textarea>
 				  </div>
 
-				  <!--<div class="form-group">
-				  	<div class="g-recaptcha" data-sitekey="6LdtwdkZAAAAAF0tZZ6j-YUwu9quf--HL7lIJmpG"></div>
-				  </div>-->
+				  <div class="form-group">
+				  	<div class="g-recaptcha" data-sitekey="6LdtwdkZAAAAAF0tZZ6j-YUwu9quf--HL7lIJmpG" data-callback='reCaptchaSubmit'></div>
+				  </div>
 				  
-				  <input class="btn btn-primary" type="submit" value="Make Request">
-
+				  <input id="submit-button" class="btn btn-primary" type="submit" value="Make Request" disabled>
 				</form>
 			</div>
 

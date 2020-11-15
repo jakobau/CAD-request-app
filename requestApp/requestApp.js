@@ -106,6 +106,11 @@ var app = new Vue({
 
 	  	reloadPage: function() {
 	  		location.reload(); 
+	  	},
+
+	  	reCaptchaSubmit: function() {
+	  		console.log("reCaptcha");
+	  		document.getElementById("submit-button").disabled = false;
 	  	}
   	}
 });
