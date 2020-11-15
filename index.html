@@ -163,9 +163,12 @@
 				  <div class="form-group">
 				  	<div class="g-recaptcha" data-sitekey="6LdtwdkZAAAAAF0tZZ6j-YUwu9quf--HL7lIJmpG" data-callback='reCaptchaSubmit'></div>
 				  </div>
-				  
+
+				
 				  <input id="submit-button" class="btn btn-primary" type="submit" value="Make Request" disabled>
+				
 				</form>
+
 			</div>
 
 			<!-- SUBMIT PAGE -->
@@ -194,6 +197,12 @@
 	</div>
 
 </body>
+<script>
+	function reCaptchaSubmit() {
+		//document.getElementById('submit-button').style.display = 'block';
+		document.getElementById("submit-button").disabled = false;
+	}
+</script>
 </html>
 
 <script src="requestApp/requestApp.js"></script>
