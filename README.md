@@ -6,3 +6,4 @@ This app is used to help manage the 3D design requests to NexTech volunteer 3D p
 
 Extra: Students/users can look up their request with the request ID and see progress.
 
+This site is live at https://www.hawaii3drequests.com/
